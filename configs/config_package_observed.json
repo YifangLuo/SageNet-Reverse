@@ -1,0 +1,91 @@
+{
+    "name": "all_physical_observed",
+    "description": "Experiment package: 1 Joint + 3 Single, observed noise (PTA NANOGrav15yr real + LIGO O3 CC spectrum + LISA CBE)",
+
+    "dataset": {
+        "joint_path": "dataset/joint/Dataset_PTA_LISA_LIGO.json",
+        "joint_type": "concat",
+        "single_dir": "dataset/single",
+        "single_files": {
+            "PTA":  "PTA_fixed_14pts.json",
+            "LISA": "LISA_fixed_500pts.json",
+            "LIGO": "LIGO_fixed_546pts.json"
+        }
+    },
+
+    "tasks": ["PTA","LISA","LIGO","joint"],
+
+    "features": {
+        "use_slope": true,
+        "use_curvature": true
+    },
+
+    "training": {
+        "epochs": 1500,
+        "batch_size": 256,
+        "learning_rate": 0.0002,
+        "weight_decay": 1e-5,
+        "grad_clip": 5.0,
+        "scheduler_T_max": 300
+    },
+
+    "model": {
+        "num_inputs": 9,
+        "num_hidden": 128,
+        "num_layers": 10,
+        "context_dim": 64
+    },
+
+    "noise": {
+        "use_complex": false,
+        "level": 0.0,
+        "glitch_prob": 0.0,
+
+        "pta": {
+            "noise_dir": "noise/NANOGrav15yr",
+            "mode": "density_obs",
+            "per_sample_noise": true,
+            "noise_scale": 1.0,
+            "n_bins_use": 14
+        },
+
+        "lisa": {
+            "enabled": true,
+            "noise_source": "analytical",
+            "noise_preset": "cbe",
+            "noise_scale": 1.0,
+            "injection_mode": "logscale",
+            "logscale_base": 1.0,
+            "T_obs": 4.0,
+            "include_confusion": true
+        },
+
+        "ligo": {
+            "noise_file": "noise/C_O1_O2_O3.dat.txt",
+            "noise_type": "cc_spectrum",
+            "noise_scale": 1.0,
+            "injection_mode": "physical",
+            "logscale_base": 1.0
+        }
+    },
+
+    "noise_curriculum": {
+        "enabled": true,
+        "warmup_fraction": 0.2,
+        "start_scale": 0.05,
+        "end_scale": 1.0
+    },
+
+    "param_emphasis": {
+        "enabled": true,
+        "aux_weight": 0.1,
+        "weights": {
+            "T_re": 3,
+            "DN_re": 0.3
+        }
+    },
+
+    "output": {
+        "package_dir": "experiments/all_physical_observed"
+    }
+}

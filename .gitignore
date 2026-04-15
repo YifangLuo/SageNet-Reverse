@@ -1,0 +1,12 @@
+__pycache__/
+*.pth
+*.pt
+*.ckpt
+.ipynb
+.idea/
+models/
+figures/
+experiments/
+*.egg-info/
+dist/
+build/
